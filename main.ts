@@ -13,15 +13,7 @@ input.onButtonPressed(Button.A, function () {
         # # # # #
         # # # # #
         `)
-    green()
-    yellow()
 })
-function music2 () {
-    music.playTone(659, music.beat(BeatFraction.Half))
-    music.playTone(554, music.beat(BeatFraction.Half))
-    music.playTone(494, music.beat(BeatFraction.Half))
-    music.playTone(440, music.beat(BeatFraction.Half))
-}
 input.onButtonPressed(Button.AB, function () {
     control.reset()
 })
@@ -52,18 +44,37 @@ function sensor () {
     control.waitMicros(10)
     pins.digitalWritePin(DigitalPin.P12, 0)
     distance = pins.pulseIn(DigitalPin.P13, PulseValue.High) / 58
+    if (distance < 5) {
+        basic.showLeds(`
+            # # # # #
+            # # # # #
+            # # # # #
+            # # # # #
+            # # # # #
+            `)
+        range2 = strip.range(3, 1)
+        range2.showColor(neopixel.colors(NeoPixelColors.Purple))
+    }
+}
+function music2 () {
+    music.playTone(659, music.beat(BeatFraction.Half))
+    music.playTone(554, music.beat(BeatFraction.Half))
+    music.playTone(494, music.beat(BeatFraction.Half))
+    music.playTone(440, music.beat(BeatFraction.Half))
 }
 let distance = 0
 let range2: neopixel.Strip = null
 let malfunction = 0
+let cansense = false
 let Walk_button = 0
 let strip: neopixel.Strip = null
-strip = neopixel.create(DigitalPin.P0, 4, NeoPixelMode.RGB)
+strip = neopixel.create(DigitalPin.P16, 4, NeoPixelMode.RGB)
 strip.setBrightness(40)
 // This is to make the code to run forever, because it is always true therefore it will run forever.
 while (true) {
     // This code will only run and loop if the variable (Walk_button) is 0.
     while (Walk_button == 0) {
+        cansense = true
         // This is scenario 1, this is for normal mode for a light.
         if (malfunction == 0) {
             green()
@@ -76,13 +87,19 @@ while (true) {
                 black()
                 basic.pause(100)
             }
+            sensor()
+            basic.pause(1000)
             black()
             yellow()
             basic.pause(2000)
             black()
+            sensor()
             red()
             basic.pause(2000)
             black()
+            basic.clearScreen()
+            range2 = strip.range(3, 1)
+            range2.showColor(neopixel.colors(NeoPixelColors.Black))
         } else if (malfunction == 1) {
             yellow()
             basic.pause(200)
@@ -100,6 +117,7 @@ while (true) {
     }
     // This is the other loop, if you press the A button which is the variable Walk_button. it runs if the variable doesn't equal 0. The code is the same except there are some tiny changes.
     while (Walk_button != 0) {
+        cansense = false
         // It will show a person icon so that it means it means that you can walk.
         basic.showLeds(`
             . . # . .
@@ -162,6 +180,9 @@ while (true) {
         break;
     }
 }
+basic.forever(function () {
+	
+})
 control.inBackground(function () {
     if (malfunction != 0 && Walk_button != 0) {
         malfunction = 0
