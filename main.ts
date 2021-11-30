@@ -38,23 +38,7 @@ function black () {
     range2.showColor(neopixel.colors(NeoPixelColors.Black))
 }
 function sensor () {
-    pins.digitalWritePin(DigitalPin.P12, 0)
-    control.waitMicros(2)
-    pins.digitalWritePin(DigitalPin.P12, 1)
-    control.waitMicros(10)
-    pins.digitalWritePin(DigitalPin.P12, 0)
-    distance = pins.pulseIn(DigitalPin.P13, PulseValue.High) / 58
-    if (distance < 5) {
-        basic.showLeds(`
-            # # # # #
-            # # # # #
-            # # # # #
-            # # # # #
-            # # # # #
-            `)
-        range2 = strip.range(3, 1)
-        range2.showColor(neopixel.colors(NeoPixelColors.Purple))
-    }
+	
 }
 function music2 () {
     music.playTone(659, music.beat(BeatFraction.Half))
@@ -186,5 +170,26 @@ basic.forever(function () {
 control.inBackground(function () {
     if (malfunction != 0 && Walk_button != 0) {
         malfunction = 0
+    }
+})
+control.inBackground(function () {
+    while (cansense == true) {
+        pins.digitalWritePin(DigitalPin.P12, 0)
+        control.waitMicros(2)
+        pins.digitalWritePin(DigitalPin.P12, 1)
+        control.waitMicros(10)
+        pins.digitalWritePin(DigitalPin.P12, 0)
+        distance = pins.pulseIn(DigitalPin.P13, PulseValue.High) / 58
+        if (distance < 5) {
+            basic.showLeds(`
+                # # # # #
+                # # # # #
+                # # # # #
+                # # # # #
+                # # # # #
+                `)
+            range2 = strip.range(3, 1)
+            range2.showColor(neopixel.colors(NeoPixelColors.Purple))
+        }
     }
 })
