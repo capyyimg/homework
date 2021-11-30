@@ -1,14 +1,7 @@
-/**
- * Whenever the program is turned on, it will set one of the variable that I set up(Walk_button) to 0 and another variable (malfunction) to 0 as well.
- */
-// This is where the code is running.
+// Whenever the program is turned on, it will set one of the variable that I set up(Walk_button) to 0 and another variable (malfunction) to 0 as well.
 function green () {
-    range = strip.range(2, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Green))
-    range = strip.range(3, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Black))
-    range = strip.range(4, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Black))
+    range2 = strip.range(2, 1)
+    range2.showColor(neopixel.colors(NeoPixelColors.Green))
 }
 // When ever you press the A button, a variable that I set up will increase by 1 and it will show the led which is full.
 input.onButtonPressed(Button.A, function () {
@@ -20,7 +13,15 @@ input.onButtonPressed(Button.A, function () {
         # # # # #
         # # # # #
         `)
+    green()
+    yellow()
 })
+function music2 () {
+    music.playTone(659, music.beat(BeatFraction.Half))
+    music.playTone(554, music.beat(BeatFraction.Half))
+    music.playTone(494, music.beat(BeatFraction.Half))
+    music.playTone(440, music.beat(BeatFraction.Half))
+}
 input.onButtonPressed(Button.AB, function () {
     control.reset()
 })
@@ -28,58 +29,36 @@ input.onButtonPressed(Button.AB, function () {
 input.onButtonPressed(Button.B, function () {
     malfunction += 1
 })
-function red_light () {
-    red()
-    basic.pause(3000)
-    black()
-    for (let turns = 0; turns <= 8; turns++) {
-        basic.showLeds(`
-            . . # . .
-            . # . . .
-            # # # # #
-            . # . . .
-            . . # . .
-            `)
-        basic.pause(100)
-        basic.showLeds(`
-            . . . . .
-            . . . . .
-            . . . . .
-            . . . . .
-            . . . . .
-            `)
-        basic.pause(100)
-    }
-}
 function yellow () {
-    range = strip.range(1, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Yellow))
-    range = strip.range(2, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Black))
-    range = strip.range(3, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Black))
+    range2 = strip.range(1, 1)
+    range2.showColor(neopixel.colors(NeoPixelColors.Yellow))
 }
 function red () {
-    range = strip.range(0, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Red))
-    range = strip.range(1, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Black))
-    range = strip.range(2, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Black))
+    range2 = strip.range(0, 1)
+    range2.showColor(neopixel.colors(NeoPixelColors.Red))
 }
 function black () {
-    range = strip.range(1, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Black))
-    range = strip.range(2, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Black))
-    range = strip.range(3, 1)
-    range.showColor(neopixel.colors(NeoPixelColors.Black))
+    range2 = strip.range(1, 1)
+    range2.showColor(neopixel.colors(NeoPixelColors.Black))
+    range2 = strip.range(2, 1)
+    range2.showColor(neopixel.colors(NeoPixelColors.Black))
+    range2 = strip.range(0, 1)
+    range2.showColor(neopixel.colors(NeoPixelColors.Black))
 }
-let range: neopixel.Strip = null
+function sensor () {
+    pins.digitalWritePin(DigitalPin.P12, 0)
+    control.waitMicros(2)
+    pins.digitalWritePin(DigitalPin.P12, 1)
+    control.waitMicros(10)
+    pins.digitalWritePin(DigitalPin.P12, 0)
+    distance = pins.pulseIn(DigitalPin.P13, PulseValue.High) / 58
+}
+let distance = 0
+let range2: neopixel.Strip = null
 let malfunction = 0
 let Walk_button = 0
 let strip: neopixel.Strip = null
-strip = neopixel.create(DigitalPin.P0, 3, NeoPixelMode.RGB)
+strip = neopixel.create(DigitalPin.P0, 4, NeoPixelMode.RGB)
 strip.setBrightness(40)
 // This is to make the code to run forever, because it is always true therefore it will run forever.
 while (true) {
@@ -89,18 +68,21 @@ while (true) {
         if (malfunction == 0) {
             green()
             basic.pause(3000)
-            black()
             // This is a loop to create a blinking effect, it will shut off the pin for 0.1sec and turn it on for 0.1sec and this will loop for 3 times.
-            for (let index = 0; index <= 2; index++) {
-                green()
+            for (let index = 0; index < 3; index++) {
+                range2 = strip.range(2, 1)
+                range2.showColor(neopixel.colors(NeoPixelColors.Green))
                 basic.pause(100)
                 black()
                 basic.pause(100)
             }
+            black()
             yellow()
             basic.pause(2000)
             black()
+            red()
             basic.pause(2000)
+            black()
         } else if (malfunction == 1) {
             yellow()
             basic.pause(200)
@@ -126,16 +108,20 @@ while (true) {
             . . # . .
             . # . # .
             `)
-        pins.digitalWritePin(DigitalPin.P2, 1)
-        basic.pause(7000)
+        green()
+        for (let index = 0; index < 5; index++) {
+            music2()
+        }
         // After the icon shows up for a little bit, it will show a count down.
         for (let index3 = 0; index3 <= 9; index3++) {
             basic.showNumber(10 - index3)
         }
-        for (let index2 = 0; index2 <= 2; index2++) {
-            pins.digitalWritePin(DigitalPin.P2, 0)
+        // This is a loop to create a blinking effect, it will shut off the pin for 0.1sec and turn it on for 0.1sec and this will loop for 3 times.
+        for (let index = 0; index < 3; index++) {
+            range2 = strip.range(2, 1)
+            range2.showColor(neopixel.colors(NeoPixelColors.Green))
             basic.pause(100)
-            pins.digitalWritePin(DigitalPin.P2, 1)
+            black()
             basic.pause(100)
         }
         basic.clearScreen()
@@ -147,14 +133,12 @@ while (true) {
             # # # # #
             # # # # #
             `)
-        pins.digitalWritePin(DigitalPin.P2, 0)
-        pins.digitalWritePin(DigitalPin.P1, 1)
+        yellow()
         basic.pause(2500)
-        pins.digitalWritePin(DigitalPin.P1, 0)
-        pins.digitalWritePin(DigitalPin.P0, 1)
+        black()
+        red()
         basic.pause(25000)
-        pins.digitalWritePin(DigitalPin.P0, 0)
-        for (let turns2 = 0; turns2 <= 8; turns2++) {
+        for (let index = 0; index < 9; index++) {
             basic.showLeds(`
                 . . # . .
                 . # . . .
