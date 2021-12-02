@@ -38,7 +38,23 @@ function black () {
     range2.showColor(neopixel.colors(NeoPixelColors.Black))
 }
 function sensor () {
-	
+    pins.digitalWritePin(DigitalPin.P12, 0)
+    control.waitMicros(2)
+    pins.digitalWritePin(DigitalPin.P12, 1)
+    control.waitMicros(10)
+    pins.digitalWritePin(DigitalPin.P12, 0)
+    distance = pins.pulseIn(DigitalPin.P13, PulseValue.High) / 58
+    if (distance < 5) {
+        basic.showLeds(`
+            # # # # #
+            # # # # #
+            # # # # #
+            # # # # #
+            # # # # #
+            `)
+        range2 = strip.range(3, 1)
+        range2.showColor(neopixel.colors(NeoPixelColors.Purple))
+    }
 }
 function music2 () {
     music.playTone(659, music.beat(BeatFraction.Half))
@@ -72,7 +88,6 @@ while (true) {
                 basic.pause(100)
             }
             sensor()
-            basic.pause(1000)
             black()
             yellow()
             basic.pause(2000)
@@ -101,7 +116,6 @@ while (true) {
     }
     // This is the other loop, if you press the A button which is the variable Walk_button. it runs if the variable doesn't equal 0. The code is the same except there are some tiny changes.
     while (Walk_button != 0) {
-        cansense = false
         // It will show a person icon so that it means it means that you can walk.
         basic.showLeds(`
             . . # . .
@@ -111,8 +125,12 @@ while (true) {
             . # . # .
             `)
         green()
-        for (let index = 0; index < 5; index++) {
-            music2()
+        if (Walk_button >= 2) {
+            for (let index = 0; index < 5; index++) {
+                music2()
+            }
+        } else {
+            basic.pause(1000)
         }
         // After the icon shows up for a little bit, it will show a count down.
         for (let index3 = 0; index3 <= 9; index3++) {
@@ -164,32 +182,8 @@ while (true) {
         break;
     }
 }
-basic.forever(function () {
-	
-})
 control.inBackground(function () {
     if (malfunction != 0 && Walk_button != 0) {
         malfunction = 0
-    }
-})
-control.inBackground(function () {
-    while (cansense == true) {
-        pins.digitalWritePin(DigitalPin.P12, 0)
-        control.waitMicros(2)
-        pins.digitalWritePin(DigitalPin.P12, 1)
-        control.waitMicros(10)
-        pins.digitalWritePin(DigitalPin.P12, 0)
-        distance = pins.pulseIn(DigitalPin.P13, PulseValue.High) / 58
-        if (distance < 5) {
-            basic.showLeds(`
-                # # # # #
-                # # # # #
-                # # # # #
-                # # # # #
-                # # # # #
-                `)
-            range2 = strip.range(3, 1)
-            range2.showColor(neopixel.colors(NeoPixelColors.Purple))
-        }
     }
 })
